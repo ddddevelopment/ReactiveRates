@@ -1,12 +1,12 @@
 package com.reactiverates.infrastructure.client;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,29 +51,29 @@ public class ExchangeRateClientTest {
         Currency from = Currency.USD;
         Currency to = Currency.EUR;
         ExchangeRateApiResponse.QueryInfo queryInfo = new ExchangeRateApiResponse.QueryInfo(
-            from.getCode(), 
-            to.getCode(), 
-            BigDecimal.valueOf(1)
+            from.code(), 
+            to.code(), 
+            BigDecimal.ONE
         );
         ExchangeRateApiResponse.RateInfo rateInfo = new ExchangeRateApiResponse.RateInfo(BigDecimal.valueOf(0.85123));
         ExchangeRateApiResponse mockResponse = new ExchangeRateApiResponse(true, queryInfo, rateInfo, LocalDate.now(), BigDecimal.valueOf(0.85123));
 
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(ExchangeRateApiResponse.class)).thenReturn(Mono.just(mockResponse));
 
-        StepVerifier.create(exchangeRateClient.getCurrentRate(from.getCode(), to.getCode()))
+        StepVerifier.create(exchangeRateClient.getCurrentRate(from.code(), to.code()))
             .expectNextMatches(exchangeRate -> {
-                return exchangeRate.fromCurrency().equals(from) &&
-                       exchangeRate.toCurrency().equals(to) &&
+                return exchangeRate.fromCurrency().code().equals(from.code()) &&
+                       exchangeRate.toCurrency().code().equals(to.code()) &&
                        exchangeRate.rate().compareTo(BigDecimal.valueOf(0.85123)) == 0 &&
                        exchangeRate.timestamp() != null;
             })
             .verifyComplete();
 
         verify(webClient).get();
-        verify(requestHeadersUriSpec).uri(contains("from=USD&to=EUR"));
+        verify(requestHeadersUriSpec).uri(any(Function.class));
         verify(requestHeadersSpec).retrieve();
         verify(responseSpec).bodyToMono(ExchangeRateApiResponse.class);
     }

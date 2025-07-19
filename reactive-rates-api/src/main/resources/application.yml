@@ -1,5 +1,16 @@
 server:
     port: 8080
+
 spring:
     application:
         name: reactive-rates-api
+    jackson:
+        default-property-inclusion: non-null
+        serialization:
+            write-dates-as-timestamps: false
+
+external-apis:
+    exchange-rate:
+        base-url: https://api.exchangerate.host
+        timeout: 10s
+        connect-timeout: 5s

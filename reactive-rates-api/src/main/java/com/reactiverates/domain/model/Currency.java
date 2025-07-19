@@ -32,6 +32,10 @@ public record Currency(
         return new Currency(code, "", "");
     }
 
+    public String getCode() {
+        return code;
+    }
+
     public static final Currency USD = new Currency("USD", "US Dollar", "$");
     public static final Currency EUR = new Currency("EUR", "Euro", "€");
     public static final Currency RUB = new Currency("RUB", "Russian Ruble", "₽");

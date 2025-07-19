@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -17,7 +18,7 @@ import com.reactiverates.infrastructure.client.dto.ExchangeRateApiResponse;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-
+@Component("exchangeRateHostProvider")
 public class ExchangeRateClient implements ExchangeRateProvider {
     private static final Logger log = LoggerFactory.getLogger(ExchangeRateClient.class);
     private static final String PROVIDER_NAME = "ExchangeRate.host";

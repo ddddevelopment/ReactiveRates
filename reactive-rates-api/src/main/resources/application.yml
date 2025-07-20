@@ -3,17 +3,21 @@ server:
 
 spring:
     application:
-        name: reactive-rates-api
+        name: ReactiveRates API
     jackson:
         default-property-inclusion: non-null
         serialization:
             write-dates-as-timestamps: false
 
+exchangerate-api:
+  base-url: https://v6.exchangerate-api.com
+  api-key: feedc09fac544d8041317c40
+
 unirate-api:
     base-url: https://api.unirateapi.com
     timeout: 10s
     connect-timeout: 5s
-    api-key: ${UNIRATE_API_KEY:QashoCNTEdDqrEYt2WMMvUSMo3tyJz8BHpCXkqvSSgBUbqB5ruk7lu4HvwXbp3GV}
+    api-key: QashoCNTEdDqrEYt2WMMvUSMo3tyJz8BHpCXkqvSSgBUbqB5ruk7lu4HvwXbp3GV
 
 springdoc:
     api-docs:

@@ -16,18 +16,19 @@ import java.util.Objects;
  * @param toCurrency   Целевая валюта  
  * @param rate         Курс обмена
  * @param timestamp    Время получения курса
+ * @param providerName Название провайдера данных
  */
 @Schema(description = "Информация о курсе обмена между двумя валютами")
 public record ExchangeRate(
-    @JsonProperty("from") 
+    @JsonProperty("from")
     @Schema(description = "Исходная валюта")
     Currency fromCurrency,
     
-    @JsonProperty("to") 
+    @JsonProperty("to")
     @Schema(description = "Целевая валюта")
     Currency toCurrency,
     
-    @JsonProperty("rate") 
+    @JsonProperty("rate")
     @Schema(
         description = "Курс обмена (сколько единиц целевой валюты за 1 единицу исходной)",
         example = "1.0829",
@@ -36,14 +37,18 @@ public record ExchangeRate(
     )
     BigDecimal rate,
     
-    @JsonProperty("timestamp") 
+    @JsonProperty("timestamp")
     @Schema(
         description = "Время получения курса",
         example = "2024-01-15T10:30:00",
         type = "string",
         format = "date-time"
     )
-    LocalDateTime timestamp
+    LocalDateTime timestamp,
+
+    @JsonProperty("provider")
+    @Schema(description = "Источник данных о курсе", example = "UniRateAPI")
+    String providerName
 ) {
     
     @JsonCreator
@@ -58,16 +63,17 @@ public record ExchangeRate(
         }
     }
     
-    public static ExchangeRate of(Currency from, Currency to, BigDecimal rate) {
-        return new ExchangeRate(from, to, rate, LocalDateTime.now());
+    public static ExchangeRate of(Currency from, Currency to, BigDecimal rate, String providerName) {
+        return new ExchangeRate(from, to, rate, LocalDateTime.now(), providerName);
     }
     
-    public static ExchangeRate of(String fromCode, String toCode, BigDecimal rate) {
+    public static ExchangeRate of(String fromCode, String toCode, BigDecimal rate, String providerName) {
         return new ExchangeRate(
             Currency.of(fromCode), 
             Currency.of(toCode), 
             rate, 
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            providerName
         );
     }
 }

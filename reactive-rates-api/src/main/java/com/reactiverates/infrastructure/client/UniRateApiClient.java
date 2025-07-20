@@ -33,7 +33,7 @@ public class UniRateApiClient implements RateProvider {
 
     @Override
     public int getPriority() {
-        return 10;
+        return 20;
     }
 
     @Override
@@ -105,7 +105,8 @@ public class UniRateApiClient implements RateProvider {
             Currency.of(response.base()),
             Currency.of(response.to()),
             response.rate(),
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            PROVIDER_NAME
         );
     }
 }

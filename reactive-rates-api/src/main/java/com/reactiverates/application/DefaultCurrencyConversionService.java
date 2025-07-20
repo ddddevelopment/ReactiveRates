@@ -2,13 +2,11 @@ package com.reactiverates.application;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.reactiverates.domain.exception.CurrencyNotFoundException;
 import com.reactiverates.domain.model.ConversionRequest;
 import com.reactiverates.domain.model.ConversionResult;
 import com.reactiverates.domain.model.ExchangeRate;
@@ -18,19 +16,14 @@ import com.reactiverates.domain.service.RateProvider;
 import reactor.core.publisher.Mono;
 
 
-@Component
+@Service
 public class DefaultCurrencyConversionService implements CurrencyConversionService {
     private static final Logger log = LoggerFactory.getLogger(DefaultCurrencyConversionService.class);
-    private final List<RateProvider> providers;
+    private final RateProvider rateProvider;
 
-    public DefaultCurrencyConversionService(List<RateProvider> providers) {
-        this.providers = providers.stream()
-            .sorted((p1, p2) -> Integer.compare(p1.getPriority(), p2.getPriority()))
-            .toList();
-
-        log.info("Initialized with {} exchange rate providers: {}", 
-            providers.size(), 
-            providers.stream().map(RateProvider::getProviderName).toList());
+    public DefaultCurrencyConversionService(RateProvider rateProvider) {
+        this.rateProvider = rateProvider;
+        log.info("Initialized with exchange rate provider: {}", rateProvider.getProviderName());
     }
 
     @Override
@@ -50,17 +43,8 @@ public class DefaultCurrencyConversionService implements CurrencyConversionServi
 
     @Override
     public Mono<ExchangeRate> getExchangeRate(String fromCurrency, String toCurrency) {
-        log.debug("Getting exchange rate: {} -> {}", fromCurrency, toCurrency);
-
-        return providers.stream()
-            .reduce(Mono.<ExchangeRate>empty(), 
-                (fallback, provider) -> fallback.switchIfEmpty(Mono.defer(() -> {
-                    log.debug("Trying provider: {}", provider.getProviderName());
-                    return provider.getCurrentRate(fromCurrency, toCurrency)
-                        .doOnError(error -> log.warn("Provider {} failed: {}", provider.getProviderName(), error.getMessage()));
-                })),
-                (m1, m2) -> m1.switchIfEmpty(m2))
-                .switchIfEmpty(Mono.error(new CurrencyNotFoundException("No provider could fetch rate for " + fromCurrency + "/" + toCurrency)));
+        log.debug("Getting exchange rate via {}: {} -> {}", rateProvider.getProviderName(), fromCurrency, toCurrency);
+        return rateProvider.getCurrentRate(fromCurrency, toCurrency);
     }
 
     @Override
@@ -71,7 +55,7 @@ public class DefaultCurrencyConversionService implements CurrencyConversionServi
     }
 
     private ConversionResult createSameCurrencyResult(ConversionRequest request) {
-        ExchangeRate sameCurrencyRate = ExchangeRate.of(request.fromCurrency(), request.toCurrency(), BigDecimal.ONE);
+        ExchangeRate sameCurrencyRate = ExchangeRate.of(request.fromCurrency(), request.toCurrency(), BigDecimal.ONE, "Internal");
         return ConversionResult.of(request, sameCurrencyRate, request.amount());
     }
 

@@ -63,7 +63,7 @@ public class MockExchangeRateProvider implements RateProvider {
                 log.debug("[{}] Mock rate generated: {} -> {} = {}", 
                     PROVIDER_NAME, fromCurrency, toCurrency, finalRate);
                 
-                return ExchangeRate.of(from, to, finalRate);
+                return ExchangeRate.of(from, to, finalRate, PROVIDER_NAME);
             }));
     }
 

@@ -12,23 +12,27 @@ import java.time.LocalDateTime;
  */
 @Schema(description = "Результат конвертации валюты с полной информацией о курсе и расчетах")
 public record ConversionResult(
-    @JsonProperty("request") 
+    @JsonProperty("request")
     @Schema(description = "Исходный запрос на конвертацию")
     ConversionRequest request,
-    
-    @JsonProperty("exchangeRate") 
+
+    @JsonProperty("provider")
+    @Schema(description = "Источник данных о курсе", example = "UniRateAPI")
+    String provider,
+
+    @JsonProperty("exchangeRate")
     @Schema(description = "Информация о курсе обмена на момент конвертации")
     ExchangeRate exchangeRate,
-    
-    @JsonProperty("convertedAmount") 
+
+    @JsonProperty("convertedAmount")
     @Schema(
         description = "Сумма после конвертации",
         example = "92.34",
         type = "number"
     )
     BigDecimal convertedAmount,
-    
-    @JsonProperty("timestamp") 
+
+    @JsonProperty("timestamp")
     @Schema(
         description = "Время выполнения конвертации",
         example = "2024-01-15T10:30:00",
@@ -37,16 +41,17 @@ public record ConversionResult(
     )
     LocalDateTime timestamp
 ) {
-    
+
     public static ConversionResult of(
-        ConversionRequest request, 
-        ExchangeRate rate, 
+        ConversionRequest request,
+        ExchangeRate rate,
         BigDecimal convertedAmount
     ) {
         return new ConversionResult(
-            request, 
-            rate, 
-            convertedAmount, 
+            request,
+            rate.providerName(),
+            rate,
+            convertedAmount,
             LocalDateTime.now()
         );
     }

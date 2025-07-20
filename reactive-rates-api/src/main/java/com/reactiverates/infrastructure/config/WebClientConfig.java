@@ -3,6 +3,7 @@ package com.reactiverates.infrastructure.config;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +19,37 @@ import reactor.netty.http.client.HttpClient;
 public class WebClientConfig {
     private static final Logger log = LoggerFactory.getLogger(WebClientConfig.class);
 
-    @Bean
-    public WebClient webClient(UniRateApiConfig config) {
-        HttpClient httpClient = HttpClient.create()
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) config.getConnectTimeout().toMillis())
-            .responseTimeout(config.getTimeout())
-            .doOnConnected(conn -> 
-                conn.addHandlerLast(new ReadTimeoutHandler((int) config.getTimeout().toSeconds(), TimeUnit.SECONDS))
-                    .addHandlerLast(new WriteTimeoutHandler((int) config.getTimeout().toSeconds(), TimeUnit.SECONDS)));
+    @Bean("uniRateWebClient")
+    public WebClient uniRateWebClient(UniRateApiConfig config) {
+        log.info("🚀 Configuring WebClient for UniRateAPI with base URL: {}", config.baseUrl());
 
-        log.info("🚀 Configuring WebClient for UniRateAPI with base URL: {}", config.getBaseUrl());
+        HttpClient httpClient = HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) config.connectTimeout().toMillis())
+            .responseTimeout(config.timeout())
+            .doOnConnected(conn -> 
+                conn.addHandlerLast(new ReadTimeoutHandler((int) config.timeout().toSeconds(), TimeUnit.SECONDS))
+                    .addHandlerLast(new WriteTimeoutHandler((int) config.timeout().toSeconds(), TimeUnit.SECONDS)));
 
         return WebClient.builder()
-            .baseUrl(config.getBaseUrl())
+            .baseUrl(config.baseUrl())
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .clientConnector(new ReactorClientHttpConnector(httpClient))
+            .build();
+    }
+
+    @Bean("exchangeRateWebClient")
+    public WebClient exchangeRateWebClient(ExchangeRateApiConfig config) {
+        log.info("🚀 Configuring WebClient for ExchangeRate-API.com with base URL: {}", config.baseUrl());
+        
+        HttpClient httpClient = HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) config.connectTimeout().toMillis())
+            .responseTimeout(config.timeout())
+            .doOnConnected(conn -> 
+                conn.addHandlerLast(new ReadTimeoutHandler((int) config.timeout().toSeconds(), TimeUnit.SECONDS))
+                    .addHandlerLast(new WriteTimeoutHandler((int) config.timeout().toSeconds(), TimeUnit.SECONDS)));
+        
+        return WebClient.builder()
+            .baseUrl(config.baseUrl())
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .clientConnector(new ReactorClientHttpConnector(httpClient))
             .build();

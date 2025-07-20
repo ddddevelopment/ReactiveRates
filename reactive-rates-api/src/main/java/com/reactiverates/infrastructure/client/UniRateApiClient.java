@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,14 +27,14 @@ public class UniRateApiClient implements RateProvider {
     private final WebClient webClient;
     private final UniRateApiConfig config;
 
-    public UniRateApiClient(WebClient webClient, UniRateApiConfig config) {
+    public UniRateApiClient(@Qualifier("uniRateWebClient") WebClient webClient, UniRateApiConfig config) {
         this.webClient = webClient;
         this.config = config;
     }
 
     @Override
     public int getPriority() {
-        return 20;
+        return config.priority();
     }
 
     @Override
@@ -61,8 +62,8 @@ public class UniRateApiClient implements RateProvider {
                     .queryParam("to", toCurrency)
                     .queryParam("amount", 1); 
 
-                if (config.hasApiKey()) {
-                    uriBuilder.queryParam("api_key", config.getApiKey());
+                if (config.apiKey() != null && !config.apiKey().isBlank()) {
+                    uriBuilder.queryParam("api_key", config.apiKey());
                     log.debug("[{}] Using API key for request", PROVIDER_NAME);
                 } else {
                     log.warn("[{}] ⚠️ API key not configured! Request may fail", PROVIDER_NAME);
@@ -84,8 +85,8 @@ public class UniRateApiClient implements RateProvider {
                 
                 return Mono.just(mapToExchangeRate(response));
             })
-            .timeout(Duration.ofSeconds(10))
-            .retryWhen(Retry.backoff(2, Duration.ofMillis(500))
+            .timeout(config.timeout())
+            .retryWhen(Retry.backoff(2, config.connectTimeout())
                 .doBeforeRetry(signal -> log.warn("[{}] Retrying request: {}", 
                     PROVIDER_NAME, signal.failure().getMessage()))
             )

@@ -7,6 +7,7 @@ import com.reactiverates.infrastructure.client.dto.ExchangeRateApiResponse;
 import com.reactiverates.infrastructure.config.ExchangeRateApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -22,9 +23,9 @@ public class ExchangeRateApiClient implements RateProvider {
     private final WebClient webClient;
     private final ExchangeRateApiConfig config;
 
-    public ExchangeRateApiClient(WebClient.Builder webClientBuilder, ExchangeRateApiConfig config) {
+    public ExchangeRateApiClient(@Qualifier("exchangeRateWebClient") WebClient webClient, ExchangeRateApiConfig config) {
+        this.webClient = webClient;
         this.config = config;
-        this.webClient = webClientBuilder.baseUrl(config.baseUrl()).build();
     }
 
     @Override
@@ -68,6 +69,6 @@ public class ExchangeRateApiClient implements RateProvider {
 
     @Override
     public int getPriority() {
-        return 10;
+        return config.priority();
     }
 } 

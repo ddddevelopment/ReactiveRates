@@ -29,7 +29,14 @@ public record Currency(
     }
 
     public static Currency of(String code) {
-        return new Currency(code, "", "");
+        // Проверяем, есть ли предопределенная валюта
+        return switch (code.toUpperCase()) {
+            case "USD" -> USD;
+            case "EUR" -> EUR;
+            case "RUB" -> RUB;
+            case "GBP" -> GBP;
+            default -> new Currency(code.toUpperCase(), "Unknown Currency", "?");
+        };
     }
 
     public static final Currency USD = new Currency("USD", "US Dollar", "$");

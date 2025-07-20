@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Component("exchangeRateHostProvider")
+@ConditionalOnProperty(name = "exchange-rate.mock.enabled", havingValue = "false")
 public class ExchangeRateClient implements ExchangeRateProvider {
     private static final Logger log = LoggerFactory.getLogger(ExchangeRateClient.class);
     private static final String PROVIDER_NAME = "ExchangeRate.host";
@@ -43,8 +45,14 @@ public class ExchangeRateClient implements ExchangeRateProvider {
                 .build())
             .retrieve()
             .bodyToMono(ExchangeRateApiResponse.class)
-            .filter(ExchangeRateApiResponse::isValid)
-            .map(response -> mapToExchangeRate(response, fromCurrency, toCurrency))
+            .flatMap(response -> {
+                if (!response.isValid()) {
+                    return Mono.error(new ExternalApiException(
+                        PROVIDER_NAME + " returned invalid response: " + 
+                        (response.success() ? "missing rate data" : "API request failed")));
+                }
+                return Mono.just(mapToExchangeRate(response, fromCurrency, toCurrency));
+            })
             .timeout(Duration.ofSeconds(10))
             .retryWhen(Retry.backoff(2, Duration.ofMillis(500))
                 .doBeforeRetry(signal -> log.warn("[{}] Retrying request: {}", PROVIDER_NAME, signal.failure().getMessage()))

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.reactiverates.domain.exception.CurrencyNotFoundException;
 import com.reactiverates.domain.model.ConversionRequest;
@@ -16,6 +17,8 @@ import com.reactiverates.domain.service.ExchangeRateProvider;
 
 import reactor.core.publisher.Mono;
 
+
+@Component
 public class DefaultCurrencyConversionService implements CurrencyConversionService {
     private static final Logger log = LoggerFactory.getLogger(DefaultCurrencyConversionService.class);
     private final List<ExchangeRateProvider> providers;

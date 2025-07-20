@@ -3,6 +3,7 @@ package com.reactiverates.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,11 +17,33 @@ import java.util.Objects;
  * @param rate         Курс обмена
  * @param timestamp    Время получения курса
  */
+@Schema(description = "Информация о курсе обмена между двумя валютами")
 public record ExchangeRate(
-    @JsonProperty("from") Currency fromCurrency,
-    @JsonProperty("to") Currency toCurrency,
-    @JsonProperty("rate") BigDecimal rate,
-    @JsonProperty("timestamp") LocalDateTime timestamp
+    @JsonProperty("from") 
+    @Schema(description = "Исходная валюта")
+    Currency fromCurrency,
+    
+    @JsonProperty("to") 
+    @Schema(description = "Целевая валюта")
+    Currency toCurrency,
+    
+    @JsonProperty("rate") 
+    @Schema(
+        description = "Курс обмена (сколько единиц целевой валюты за 1 единицу исходной)",
+        example = "1.0829",
+        type = "number",
+        minimum = "0"
+    )
+    BigDecimal rate,
+    
+    @JsonProperty("timestamp") 
+    @Schema(
+        description = "Время получения курса",
+        example = "2024-01-15T10:30:00",
+        type = "string",
+        format = "date-time"
+    )
+    LocalDateTime timestamp
 ) {
     
     @JsonCreator

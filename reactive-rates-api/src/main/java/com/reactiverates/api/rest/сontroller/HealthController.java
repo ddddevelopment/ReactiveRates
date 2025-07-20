@@ -1,4 +1,4 @@
-package com.reactiverates.api.rest.сontrollers;
+package com.reactiverates.api.rest.сontroller;
 
 import java.time.LocalDateTime;
 import java.util.Map;

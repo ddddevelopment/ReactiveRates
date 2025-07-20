@@ -4,7 +4,7 @@ import com.reactiverates.domain.model.ExchangeRate;
 
 import reactor.core.publisher.Mono;
 
-public interface ExchangeRateProvider {
+public interface RateProvider {
     /**
      * Получает текущий курс обмена валют
      * 

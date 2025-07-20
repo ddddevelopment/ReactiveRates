@@ -2,7 +2,8 @@ package com.reactiverates.infrastructure.client;
 
 import com.reactiverates.domain.model.Currency;
 import com.reactiverates.domain.model.ExchangeRate;
-import com.reactiverates.domain.service.ExchangeRateProvider;
+import com.reactiverates.domain.service.RateProvider;
+import java.math.RoundingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,8 +19,8 @@ import java.util.Random;
  * Mock-провайдер курсов валют для разработки и тестирования
  */
 @Component
-@ConditionalOnProperty(name = "exchange-rate.mock.enabled", havingValue = "true", matchIfMissing = true)
-public class MockExchangeRateProvider implements ExchangeRateProvider {
+@ConditionalOnProperty(name = "unirate-api.mock.enabled", havingValue = "true")
+public class MockExchangeRateProvider implements RateProvider {
     
     private static final Logger log = LoggerFactory.getLogger(MockExchangeRateProvider.class);
     private static final String PROVIDER_NAME = "Mock Provider";
@@ -49,15 +50,12 @@ public class MockExchangeRateProvider implements ExchangeRateProvider {
                 BigDecimal baseRate = BASE_RATES.get(pair);
                 
                 if (baseRate == null) {
-                    // Генерируем случайный курс для неизвестных пар
                     baseRate = new BigDecimal("1.0")
                         .add(new BigDecimal(random.nextDouble() * 2 - 1)); // ±1
                 }
                 
-                // Добавляем небольшую случайную вариацию (±2%)
                 double variation = 1.0 + (random.nextDouble() * 0.04 - 0.02);
-                BigDecimal finalRate = baseRate.multiply(new BigDecimal(variation))
-                    .setScale(6, BigDecimal.ROUND_HALF_UP);
+                BigDecimal finalRate = baseRate.multiply(new BigDecimal(variation)).setScale(6, RoundingMode.HALF_UP);
                 
                 Currency from = Currency.of(fromCurrency);
                 Currency to = Currency.of(toCurrency);

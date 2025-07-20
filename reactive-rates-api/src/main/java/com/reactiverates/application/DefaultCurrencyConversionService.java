@@ -13,7 +13,7 @@ import com.reactiverates.domain.model.ConversionRequest;
 import com.reactiverates.domain.model.ConversionResult;
 import com.reactiverates.domain.model.ExchangeRate;
 import com.reactiverates.domain.service.CurrencyConversionService;
-import com.reactiverates.domain.service.ExchangeRateProvider;
+import com.reactiverates.domain.service.RateProvider;
 
 import reactor.core.publisher.Mono;
 
@@ -21,16 +21,16 @@ import reactor.core.publisher.Mono;
 @Component
 public class DefaultCurrencyConversionService implements CurrencyConversionService {
     private static final Logger log = LoggerFactory.getLogger(DefaultCurrencyConversionService.class);
-    private final List<ExchangeRateProvider> providers;
+    private final List<RateProvider> providers;
 
-    public DefaultCurrencyConversionService(List<ExchangeRateProvider> providers) {
+    public DefaultCurrencyConversionService(List<RateProvider> providers) {
         this.providers = providers.stream()
             .sorted((p1, p2) -> Integer.compare(p1.getPriority(), p2.getPriority()))
             .toList();
 
         log.info("Initialized with {} exchange rate providers: {}", 
             providers.size(), 
-            providers.stream().map(ExchangeRateProvider::getProviderName).toList());
+            providers.stream().map(RateProvider::getProviderName).toList());
     }
 
     @Override

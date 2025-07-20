@@ -3,16 +3,14 @@ package com.reactiverates.infrastructure.client;
 import com.reactiverates.domain.exception.ExternalApiException;
 import com.reactiverates.domain.model.Currency;
 import com.reactiverates.domain.model.ExchangeRate;
-import com.reactiverates.domain.service.ExchangeRateProvider;
+import com.reactiverates.domain.service.RateProvider;
 import com.reactiverates.infrastructure.client.dto.UniRateApiResponse;
 import com.reactiverates.infrastructure.config.UniRateApiConfig;
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -21,7 +19,7 @@ import reactor.util.retry.Retry;
 
 @Component
 @ConditionalOnProperty(name = "unirate-api.mock.enabled", havingValue = "false", matchIfMissing = true)
-public class UniRateApiClient implements ExchangeRateProvider {
+public class UniRateApiClient implements RateProvider {
     private static final String PROVIDER_NAME = "UniRateAPI";
     private static final Logger log = LoggerFactory.getLogger(UniRateApiClient.class);
 
@@ -102,14 +100,11 @@ public class UniRateApiClient implements ExchangeRateProvider {
                 PROVIDER_NAME, fromCurrency, toCurrency, error.getMessage()));
     }
 
-    /**
-     * Преобразует DTO ответа в доменную модель ExchangeRate.
-     */
     private ExchangeRate mapToExchangeRate(UniRateApiResponse response) {
         return new ExchangeRate(
             Currency.of(response.base()),
             Currency.of(response.to()),
-            response.rate(), // Согласно спецификации, поле 'rate' содержит курс
+            response.rate(),
             LocalDateTime.now()
         );
     }

@@ -6,7 +6,6 @@ import com.reactiverates.domain.model.ExchangeRate;
 import com.reactiverates.domain.service.RateProvider;
 import com.reactiverates.infrastructure.client.dto.UniRateApiResponse;
 import com.reactiverates.infrastructure.config.UniRateApiConfig;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 @Component
-@ConditionalOnProperty(name = "unirate-api.mock.enabled", havingValue = "false", matchIfMissing = true)
+@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "false", matchIfMissing = true)
 public class UniRateApiClient implements RateProvider {
     private static final String PROVIDER_NAME = "UniRateAPI";
     private static final Logger log = LoggerFactory.getLogger(UniRateApiClient.class);

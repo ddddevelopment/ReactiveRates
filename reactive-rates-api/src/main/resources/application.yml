@@ -22,8 +22,9 @@ unirate-api:
     priority: 20
     timeout: 10s
     connect-timeout: 5s
-    mock:
-        enabled: false
+
+mock-provider:
+  enabled: false
 
 springdoc:
     api-docs:

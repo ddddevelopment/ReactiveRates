@@ -19,7 +19,7 @@ import java.util.Random;
  * Mock-провайдер курсов валют для разработки и тестирования
  */
 @Component
-@ConditionalOnProperty(name = "unirate-api.mock.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "true")
 public class MockExchangeRateProvider implements RateProvider {
     
     private static final Logger log = LoggerFactory.getLogger(MockExchangeRateProvider.class);

@@ -8,6 +8,7 @@ import com.reactiverates.infrastructure.config.ExchangeRateApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 
 @Component
+@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "false", matchIfMissing = true)
 public class ExchangeRateApiClient implements RateProvider {
 
     private static final String PROVIDER_NAME = "ExchangeRate-API.com";

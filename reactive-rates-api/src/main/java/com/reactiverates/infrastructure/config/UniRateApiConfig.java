@@ -16,11 +16,5 @@ public record UniRateApiConfig(
     String apiKey,
     Duration timeout,
     Duration connectTimeout,
-    int priority,
-    MockConfig mock
-) {
-    /**
-     * Конфигурация для мок-провайдера
-     */
-    public record MockConfig(boolean enabled) {}
-} 
+    int priority
+) {} 

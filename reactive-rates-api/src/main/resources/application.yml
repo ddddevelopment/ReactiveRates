@@ -9,24 +9,12 @@ spring:
         serialization:
             write-dates-as-timestamps: false
 
-# Конфигурация провайдеров курсов валют
-exchange-rate:
-    mock:
-        enabled: true  # Используем Mock-провайдер для разработки
-    external-api:
-        # Конфигурация для реального API (отключен в dev режиме)
-        base-url: https://api.exchangerate.host
-        timeout: 10s
-        connect-timeout: 5s
-        api-key: # Укажите ваш API ключ здесь для production
+unirate-api:
+    base-url: https://api.unirateapi.com
+    timeout: 10s
+    connect-timeout: 5s
+    api-key: ${UNIRATE_API_KEY:QashoCNTEdDqrEYt2WMMvUSMo3tyJz8BHpCXkqvSSgBUbqB5ruk7lu4HvwXbp3GV}
 
-external-apis:
-    exchange-rate:
-        base-url: https://api.exchangerate.host
-        timeout: 10s
-        connect-timeout: 5s
-
-# Конфигурация для SpringDoc OpenAPI (Swagger)
 springdoc:
     api-docs:
         path: /api-docs
@@ -43,8 +31,7 @@ springdoc:
     default-consumes-media-type: application/json
     default-produces-media-type: application/json
 
-# Логирование для отладки
 logging:
     level:
-        com.reactiverates: DEBUG
-        org.springframework.web: DEBUG
+        com.reactiverates: ${LOG_LEVEL:DEBUG}
+        org.springframework.web: ${LOG_LEVEL:DEBUG}

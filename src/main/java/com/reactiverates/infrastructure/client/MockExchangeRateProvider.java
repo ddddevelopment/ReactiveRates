@@ -3,6 +3,8 @@ package com.reactiverates.infrastructure.client;
 import com.reactiverates.domain.model.Currency;
 import com.reactiverates.domain.model.ExchangeRate;
 import com.reactiverates.domain.service.RateProvider;
+import com.reactiverates.infrastructure.config.BaseRateProvider;
+
 import java.math.RoundingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import java.util.Random;
  * Mock-провайдер курсов валют для разработки и тестирования
  */
 @Component
+@BaseRateProvider
 @ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "true")
 public class MockExchangeRateProvider implements RateProvider {
     

@@ -4,6 +4,7 @@ import com.reactiverates.domain.exception.ExternalApiException;
 import com.reactiverates.domain.model.ExchangeRate;
 import com.reactiverates.domain.service.RateProvider;
 import com.reactiverates.infrastructure.client.dto.ExchangeRateApiResponse;
+import com.reactiverates.infrastructure.config.BaseRateProvider;
 import com.reactiverates.infrastructure.config.ExchangeRateApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 
 @Component
+@BaseRateProvider
 @ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "false", matchIfMissing = true)
 public class ExchangeRateApiClient implements RateProvider {
 

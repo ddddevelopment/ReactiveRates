@@ -3,10 +3,11 @@ package com.reactiverates.infrastructure.client;
 import com.reactiverates.domain.exception.ExternalApiException;
 import com.reactiverates.domain.model.ExchangeRate;
 import com.reactiverates.domain.service.RateProvider;
+import com.reactiverates.infrastructure.config.BaseRateProvider;
+
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,16 +17,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@Primary
 public class ChainedRateProvider implements RateProvider {
 
     private static final Logger log = LoggerFactory.getLogger(ChainedRateProvider.class);
 
     private final List<RateProvider> providers;
 
-    public ChainedRateProvider(List<RateProvider> providers) {
+    public ChainedRateProvider(@BaseRateProvider List<RateProvider> providers) {
         this.providers = providers.stream()
-            .filter(p -> !(p instanceof ChainedRateProvider))
             .sorted(Comparator.comparingInt(RateProvider::getPriority))
             .collect(Collectors.toList());
     }

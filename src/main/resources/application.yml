@@ -26,6 +26,11 @@ unirate-api:
 mock-provider:
   enabled: false
 
+cache:
+    enabled: true
+    ttl: PT5M
+    max-size: 1000
+
 springdoc:
     api-docs:
         path: /api-docs

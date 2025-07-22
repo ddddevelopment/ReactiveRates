@@ -27,6 +27,7 @@ build/
 !**/src/test/**/build/
 
 .vscode/
+.cursor/
 
 .env
 .env.local

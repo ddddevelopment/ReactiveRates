@@ -1,7 +1,7 @@
 package com.reactiverates.api.rest.controller;
 
 import com.reactiverates.domain.model.HistoricalExchangeRate;
-import com.reactiverates.domain.service.HistoricalRatesService;
+import com.reactiverates.domain.service.HistoricalRateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,9 +28,9 @@ import java.time.LocalDate;
 )
 public class HistoricalRatesController {
     private static final Logger log = LoggerFactory.getLogger(HistoricalRatesController.class);
-    private final HistoricalRatesService service;
+    private final HistoricalRateService service;
 
-    public HistoricalRatesController(HistoricalRatesService service) {
+    public HistoricalRatesController(HistoricalRateService service) {
         this.service = service;
     }
 

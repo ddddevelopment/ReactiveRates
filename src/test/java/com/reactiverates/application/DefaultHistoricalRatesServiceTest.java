@@ -33,7 +33,7 @@ class DefaultHistoricalRatesServiceTest {
     @Mock 
     private HistoricalRateProvider provider;
     
-    private DefaultHistoricalRatesService service;
+    private DefaultHistoricalRateService service;
     
     private final LocalDate startDate = LocalDate.of(2024, 1, 15); 
     private final LocalDate endDate = LocalDate.of(2024, 1, 17);
@@ -43,7 +43,7 @@ class DefaultHistoricalRatesServiceTest {
     @BeforeEach
     void setUp() {
         when(provider.getProviderName()).thenReturn("TestProvider");
-        service = new DefaultHistoricalRatesService(repository, provider);
+        service = new DefaultHistoricalRateService(repository, provider);
     }
 
     @Nested

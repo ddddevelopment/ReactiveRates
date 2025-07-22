@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
-public interface HistoricalRatesService {
+public interface HistoricalRateService {
     
     Flux<HistoricalExchangeRate> getHistoricalRates(
         String fromCurrency, 

@@ -28,6 +28,7 @@ build/
 
 .vscode/
 .cursor/
+.github/
 
 .env
 .env.local

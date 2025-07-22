@@ -3,7 +3,7 @@ package com.reactiverates.application;
 import com.reactiverates.domain.model.HistoricalExchangeRate;
 import com.reactiverates.domain.service.HistoricalRateProvider;
 import com.reactiverates.domain.service.HistoricalRateRepository;
-import com.reactiverates.domain.service.HistoricalRatesService;
+import com.reactiverates.domain.service.HistoricalRateService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +18,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class DefaultHistoricalRatesService implements HistoricalRatesService {
+public class DefaultHistoricalRateService implements HistoricalRateService {
     
-    private static final Logger log = LoggerFactory.getLogger(DefaultHistoricalRatesService.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultHistoricalRateService.class);
     
     private final HistoricalRateRepository repository;
     private final HistoricalRateProvider provider;
     
-    public DefaultHistoricalRatesService(
+    public DefaultHistoricalRateService(
             HistoricalRateRepository repository,
             HistoricalRateProvider provider) {
         this.repository = repository;
         this.provider = provider;
-        log.info("DefaultHistoricalRatesService initialized with repository: {} and provider: {}", 
+        log.info("DefaultHistoricalRatesService initialized with repository: {} and {} historical provider", 
             repository.getClass().getSimpleName(), provider.getProviderName());
     }
     

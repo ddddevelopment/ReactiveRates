@@ -1,6 +1,5 @@
 package com.reactiverates.infrastructure.client;
 
-import com.reactiverates.domain.model.Currency;
 import com.reactiverates.domain.model.HistoricalExchangeRate;
 import com.reactiverates.domain.service.HistoricalRateProvider;
 import com.reactiverates.domain.exception.ExternalApiException;

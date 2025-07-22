@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  reactiverates:
+    build: .
+    image: reactiverates:latest
+    container_name: reactiverates
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS=
+    restart: unless-stopped

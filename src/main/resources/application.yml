@@ -10,24 +10,26 @@ spring:
             write-dates-as-timestamps: false
     
     r2dbc:
-        url: r2dbc:h2:mem:///reactive_rates_db?options=DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
-        username: sa
-        password: 
+        url: r2dbc:postgresql://localhost:5432/reactive_rates_db
+        username: postgres
+        password: root
         pool:
             enabled: true
             initial-size: 5
             max-size: 20
             max-idle-time: PT30M
-    
-    h2:
-        console:
-            enabled: true
-            path: /h2-console
-    
+
+    datasource:
+        jdbcUrl: jdbc:postgresql://localhost:5432/reactive_rates_db
+        username: postgres
+        password: root
+        driver-class-name: org.postgresql.Driver
     sql:
         init:
-            mode: always
-            schema-locations: classpath:schema.sql
+            mode: never
+    liquibase:
+        enabled: true
+        change-log: classpath:db/changelog/db.changelog-master.xml
 
 exchangerate-api:
   base-url: https://v6.exchangerate-api.com

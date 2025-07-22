@@ -13,7 +13,7 @@ import java.util.Objects;
 public class HistoricalExchangeRateEntity {
     
     @Id
-    @Column("ID")
+    @Column("id")
     private Long id;
     
     @Column("from_currency")

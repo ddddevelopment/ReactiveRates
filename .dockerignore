@@ -2,14 +2,12 @@
 **/.dockerignore
 **/.env
 **/.git
-**/.github
 **/.gitignore
 **/.project
 **/.settings
 **/.toolstarget
 **/.vs
 **/.vscode
-**/.cursor
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm

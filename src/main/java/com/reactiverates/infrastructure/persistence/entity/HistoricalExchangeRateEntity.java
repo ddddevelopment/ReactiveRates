@@ -13,6 +13,7 @@ import java.util.Objects;
 public class HistoricalExchangeRateEntity {
     
     @Id
+    @Column("ID")
     private Long id;
     
     @Column("from_currency")

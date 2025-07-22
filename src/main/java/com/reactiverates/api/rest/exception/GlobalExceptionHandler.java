@@ -16,11 +16,20 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Реактивный глобальный обработчик исключений для WebFlux
  */
-@RestControllerAdvice
+@RestControllerAdvice(assignableTypes = {
+    com.reactiverates.api.rest.controller.CurrencyConversionController.class,
+    com.reactiverates.api.rest.controller.HistoricalRatesController.class,
+    com.reactiverates.api.rest.controller.HealthController.class
+})
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     
@@ -99,20 +108,42 @@ public class GlobalExceptionHandler {
      * Обработка всех остальных ошибок в реактивном стиле
      */
     @ExceptionHandler(Exception.class)
-    public Mono<ResponseEntity<ProblemDetail>> handleGenericError(Exception ex) {
+    public Mono<ResponseEntity<ProblemDetail>> handleGenericError(Exception ex, ServerHttpRequest request) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);
-        
+
         return Mono.fromCallable(() -> {
             ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             problemDetail.setTitle("Internal Server Error");
             problemDetail.setDetail("An unexpected error occurred. Please contact support if the problem persists.");
             problemDetail.setType(URI.create("https://api.reactive-rates.com/errors/internal"));
-            
+
             problemDetail.setProperty("timestamp", Instant.now());
             problemDetail.setProperty("errorCode", "INTERNAL_001");
-            problemDetail.setProperty("traceId", java.util.UUID.randomUUID().toString());
-            
+            String traceId = UUID.randomUUID().toString();
+            problemDetail.setProperty("traceId", traceId);
+            problemDetail.setProperty("exception", ex.getClass().getName());
+            problemDetail.setProperty("message", ex.getMessage());
+            problemDetail.setProperty("path", request.getPath().toString());
+            problemDetail.setProperty("suggestion", "Проверьте параметры запроса и повторите попытку. Если ошибка повторяется — обратитесь в поддержку.");
+
+            // Показывать stacktrace только в DEV-режиме или если SHOW_STACKTRACE=true
+            String showStack = System.getenv().getOrDefault("SHOW_STACKTRACE", "false");
+            if ("true".equalsIgnoreCase(showStack) || isDevProfileActive()) {
+                List<String> stack = Arrays.stream(ex.getStackTrace())
+                    .map(StackTraceElement::toString)
+                    .toList();
+                problemDetail.setProperty("stackTrace", stack);
+            }
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
         });
+    }
+
+    // Вспомогательный метод для проверки профиля
+    private boolean isDevProfileActive() {
+        String profiles = System.getProperty("spring.profiles.active");
+        if (profiles == null) return false;
+        return Arrays.stream(profiles.split(","))
+                .anyMatch(p -> p.trim().equalsIgnoreCase("dev"));
     }
 }

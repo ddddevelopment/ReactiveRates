@@ -68,6 +68,7 @@ springdoc:
         operationsSorter: method
         disable-swagger-default-url: true
         doc-expansion: none
+        tagsSorter: alpha
     show-actuator: false
     default-consumes-media-type: application/json
     default-produces-media-type: application/json

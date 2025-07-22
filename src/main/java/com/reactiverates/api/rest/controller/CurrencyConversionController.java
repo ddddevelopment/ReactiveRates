@@ -32,8 +32,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 @Tag(
-    name = "💱 Currency Conversion", 
-    description = "Операции для конвертации валют и получения курсов обмена"
+    name = "💱 Конвертация валют",
+    description = "Операции для мгновенной конвертации и получения курсов валют."
 )
 public class CurrencyConversionController {
     private static final Logger log = LoggerFactory.getLogger(CurrencyConversionController.class);
@@ -46,13 +46,13 @@ public class CurrencyConversionController {
 
     @PostMapping("/convert")
     @Operation(
-        summary = "💰 Конвертировать валюту",
-        description = "Конвертирует указанную сумму из одной валюты в другую по актуальному курсу"
+        summary = "💱 Конвертация валюты",
+        description = "Конвертирует сумму из одной валюты в другую по актуальному курсу."
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "✅ Конвертация выполнена успешно",
+            description = "✅ Успешная конвертация",
             content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ConversionResult.class)
@@ -60,7 +60,7 @@ public class CurrencyConversionController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "❌ Некорректные данные запроса"
+            description = "❌ Ошибка валидации запроса"
         ),
         @ApiResponse(
             responseCode = "404",
@@ -68,6 +68,7 @@ public class CurrencyConversionController {
         )
     })
     public Mono<ResponseEntity<ConversionResult>> convertCurrency(
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @Valid @RequestBody ConversionRequest request
     ) {
         log.info("Converting {} {} to {}", request.amount(), request.fromCurrency(), request.toCurrency());
@@ -83,7 +84,7 @@ public class CurrencyConversionController {
 
     @GetMapping("/rates")
     @Operation(
-        summary = "📊 Получить курс обмена",
+        summary = "📈 Получить курс обмена",
         description = "Возвращает текущий курс обмена между двумя валютами"
     )
     @ApiResponses({
@@ -94,21 +95,16 @@ public class CurrencyConversionController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = ExchangeRate.class)
             )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "🔍 Валютная пара не найдена"
         )
     })
     public Mono<ResponseEntity<ExchangeRate>> getExchangeRate(
-        @Parameter(
-            description = "Исходная валюта (3-х буквенный код ISO)",
-            example = "USD",
-            required = true
-        )
-        @RequestParam("from") String fromCurrency, 
-        
-        @Parameter(
-            description = "Целевая валюта (3-х буквенный код ISO)", 
-            example = "EUR",
-            required = true
-        )
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
+        @RequestParam("from") String fromCurrency,
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam("to") String toCurrency
     ) {
         log.info("Getting exchange rate: {} -> {}", fromCurrency, toCurrency);
@@ -124,8 +120,8 @@ public class CurrencyConversionController {
     
     @GetMapping("/rates/support")
     @Operation(
-        summary = "🔍 Проверить поддержку валютной пары",
-        description = "Проверяет, поддерживается ли конвертация между указанными валютами"
+        summary = "🔍 Проверка поддержки валютной пары",
+        description = "Проверяет, поддерживается ли конвертация между указанными валютами."
     )
     @ApiResponses({
         @ApiResponse(
@@ -138,18 +134,9 @@ public class CurrencyConversionController {
         )
     })
     public Mono<ResponseEntity<SupportResponse>> checkCurrencySupport(
-        @Parameter(
-            description = "Исходная валюта для проверки",
-            example = "USD",
-            required = true
-        )
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @RequestParam String fromCurrency,
-        
-        @Parameter(
-            description = "Целевая валюта для проверки",
-            example = "EUR", 
-            required = true
-        )
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String toCurrency
     ) {
         log.debug("Checking currency pair support: {} -> {}", fromCurrency, toCurrency);
@@ -160,7 +147,7 @@ public class CurrencyConversionController {
                 fromCurrency, toCurrency, response.getBody().supported()));
     }
     
-    @Schema(description = "Ответ о поддержке валютной пары")
+    @Schema(description = "Ответ о поддержке валютной пары.")
     public record SupportResponse(
         @Schema(description = "Поддерживается ли данная валютная пара", example = "true")
         boolean supported

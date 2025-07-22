@@ -23,8 +23,8 @@ import java.time.LocalDate;
 @RequestMapping("/api/v1/historical")
 @CrossOrigin(origins = "*")
 @Tag(
-    name = "📈 Исторические курсы валют",
-    description = "Операции для получения и анализа исторических курсов валют"
+    name = "📊 Исторические курсы валют",
+    description = "Операции для получения и анализа исторических курсов валют."
 )
 public class HistoricalRatesController {
     private static final Logger log = LoggerFactory.getLogger(HistoricalRatesController.class);
@@ -36,8 +36,8 @@ public class HistoricalRatesController {
 
     @GetMapping
     @Operation(
-        summary = "📅 Получить исторические курсы",
-        description = "Возвращает исторические курсы обмена между двумя валютами за указанный период (включительно)"
+        summary = "📅 Исторические курсы за период",
+        description = "Возвращает исторические курсы обмена между двумя валютами за указанный период (включительно)."
     )
     @ApiResponses({
         @ApiResponse(
@@ -54,13 +54,13 @@ public class HistoricalRatesController {
         )
     })
     public Flux<HistoricalExchangeRate> getHistoricalRates(
-        @Parameter(description = "Исходная валюта (3-х буквенный код ISO)", example = "USD", required = true)
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @RequestParam String from,
-        @Parameter(description = "Целевая валюта (3-х буквенный код ISO)", example = "EUR", required = true)
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to,
-        @Parameter(description = "Начальная дата периода (в формате YYYY-MM-DD)", example = "2024-01-01", required = true)
+        @Parameter(description = "Начальная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-01", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-        @Parameter(description = "Конечная дата периода (в формате YYYY-MM-DD)", example = "2024-01-31", required = true)
+        @Parameter(description = "Конечная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-31", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         log.info("[HIST] Получение исторических курсов: {} -> {}, {} - {}", from, to, startDate, endDate);
@@ -71,7 +71,7 @@ public class HistoricalRatesController {
     @GetMapping("/count")
     @Operation(
         summary = "🔢 Количество исторических записей",
-        description = "Возвращает количество исторических записей для валютной пары"
+        description = "Возвращает количество исторических записей для валютной пары."
     )
     @ApiResponses({
         @ApiResponse(
@@ -84,9 +84,9 @@ public class HistoricalRatesController {
         )
     })
     public Mono<ResponseEntity<Long>> getHistoricalDataCount(
-        @Parameter(description = "Исходная валюта", example = "USD", required = true)
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @RequestParam String from,
-        @Parameter(description = "Целевая валюта", example = "EUR", required = true)
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to
     ) {
         log.info("[HIST] Получение количества исторических записей: {} -> {}", from, to);
@@ -97,8 +97,8 @@ public class HistoricalRatesController {
 
     @GetMapping("/complete")
     @Operation(
-        summary = "✅ Проверить полноту данных за период",
-        description = "Проверяет, есть ли в базе все исторические курсы за указанный период"
+        summary = "✅ Проверка полноты данных",
+        description = "Проверяет, есть ли в базе все исторические курсы за указанный период."
     )
     @ApiResponses({
         @ApiResponse(
@@ -111,13 +111,13 @@ public class HistoricalRatesController {
         )
     })
     public Mono<ResponseEntity<DataCompleteResponse>> isDataCompleteForPeriod(
-        @Parameter(description = "Исходная валюта", example = "USD", required = true)
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @RequestParam String from,
-        @Parameter(description = "Целевая валюта", example = "EUR", required = true)
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to,
-        @Parameter(description = "Начальная дата периода", example = "2024-01-01", required = true)
+        @Parameter(description = "Начальная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-01", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-        @Parameter(description = "Конечная дата периода", example = "2024-01-31", required = true)
+        @Parameter(description = "Конечная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-31", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         log.info("[HIST] Проверка полноты данных: {} -> {}, {} - {}", from, to, startDate, endDate);
@@ -130,7 +130,7 @@ public class HistoricalRatesController {
     @GetMapping("/range")
     @Operation(
         summary = "📆 Диапазон дат с историческими данными",
-        description = "Возвращает диапазон дат, за которые есть исторические курсы для валютной пары"
+        description = "Возвращает диапазон дат, за которые есть исторические курсы для валютной пары."
     )
     @ApiResponses({
         @ApiResponse(
@@ -143,9 +143,9 @@ public class HistoricalRatesController {
         )
     })
     public Mono<ResponseEntity<DateRangeResponse>> getDataDateRange(
-        @Parameter(description = "Исходная валюта", example = "USD", required = true)
+        @Parameter(description = "Исходная валюта (3 буквы, ISO)", example = "USD", required = true)
         @RequestParam String from,
-        @Parameter(description = "Целевая валюта", example = "EUR", required = true)
+        @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to
     ) {
         log.info("[HIST] Получение диапазона дат: {} -> {}", from, to);
@@ -155,13 +155,13 @@ public class HistoricalRatesController {
             .doOnError(e -> log.error("[HIST] Ошибка получения диапазона дат: {}", e.getMessage()));
     }
 
-    @Schema(description = "Ответ о полноте исторических данных за период")
+    @Schema(description = "Ответ о полноте исторических данных за период.")
     public record DataCompleteResponse(
-        @Schema(description = "Полны ли данные за период", example = "true")
+        @Schema(description = "Полные ли данные за период", example = "true")
         boolean complete
     ) {}
 
-    @Schema(description = "Ответ с диапазоном дат исторических данных")
+    @Schema(description = "Ответ с диапазоном дат исторических данных.")
     public record DateRangeResponse(
         @Schema(description = "Самая ранняя дата", example = "2024-01-01")
         LocalDate start,

@@ -19,7 +19,6 @@ import java.util.Map;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,8 +26,7 @@ import java.util.UUID;
  */
 @RestControllerAdvice(assignableTypes = {
     com.reactiverates.api.rest.controller.CurrencyConversionController.class,
-    com.reactiverates.api.rest.controller.HistoricalRatesController.class,
-    com.reactiverates.api.rest.controller.HealthController.class
+    com.reactiverates.api.rest.controller.HistoricalRatesController.class
 })
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

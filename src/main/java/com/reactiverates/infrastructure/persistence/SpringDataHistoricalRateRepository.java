@@ -50,14 +50,4 @@ public interface SpringDataHistoricalRateRepository extends R2dbcRepository<Hist
     
     @Query("DELETE FROM historical_exchange_rates WHERE date < :beforeDate")
     Mono<Integer> deleteByDateBefore(LocalDate beforeDate);
-    
-    @Query("""
-        MERGE INTO historical_exchange_rates 
-        KEY(from_currency, to_currency, date)
-        VALUES (:fromCurrency, :toCurrency, :rate, :date, :providerName, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        """)
-    Mono<Integer> upsertRate(
-        String fromCurrency, String toCurrency, java.math.BigDecimal rate, 
-        LocalDate date, String providerName
-    );
 } 

@@ -75,12 +75,10 @@ class DefaultHistoricalRateRepositoryTest {
     class SaveMethod {
         
         @Test
-        @DisplayName("должен делегировать к dataRepository.upsertRate() с правильными параметрами")
+        @DisplayName("должен делегировать к dataRepository.save()")
         void shouldDelegateToUpsertRateWithCorrectParameters() {
             // ARRANGE
-            when(dataRepository.upsertRate(
-                fromCurrency, toCurrency, rate, testDate, providerName
-            )).thenReturn(Mono.just(1));
+            when(dataRepository.save(entity)).thenReturn(Mono.just(entity));
             
             // ACT
             Mono<HistoricalExchangeRate> result = repository.save(domainRate);
@@ -90,15 +88,15 @@ class DefaultHistoricalRateRepositoryTest {
                 .expectNext(domainRate)
                 .verifyComplete();
                 
-            verify(dataRepository).upsertRate(fromCurrency, toCurrency, rate, testDate, providerName);
+            verify(dataRepository, times(1)).save(entity);
         }
         
         @Test
         @DisplayName("должен возвращать исходный domain объект после успешного сохранения")
         void shouldReturnOriginalDomainObjectAfterSuccessfulSave() {
             // ARRANGE
-            when(dataRepository.upsertRate(any(), any(), any(), any(), any()))
-                .thenReturn(Mono.just(1));
+            when(dataRepository.save(entity))
+                .thenReturn(Mono.just(entity));
             
             // ACT
             Mono<HistoricalExchangeRate> result = repository.save(domainRate);
@@ -121,7 +119,7 @@ class DefaultHistoricalRateRepositoryTest {
         void shouldPropagateErrorFromDataRepository() {
             // ARRANGE
             RuntimeException expectedError = new RuntimeException("Database constraint violation");
-            when(dataRepository.upsertRate(any(), any(), any(), any(), any()))
+            when(dataRepository.save(entity))
                 .thenReturn(Mono.error(expectedError));
             
             // ACT
@@ -207,28 +205,25 @@ class DefaultHistoricalRateRepositoryTest {
         void shouldFallbackToIndividualSavesOnBatchInsertError() {
             // ARRANGE
             when(mapper.toEntity(any())).thenReturn(entities.get(0), entities.get(1), entities.get(2));
-            
+
             RuntimeException batchError = new RuntimeException("Duplicate key constraint violation");
             when(dataRepository.saveAll(any(List.class))).thenReturn(Flux.error(batchError));
-            when(dataRepository.upsertRate(eq("USD"), eq("EUR"), eq(new BigDecimal("1.0850")), eq(LocalDate.of(2024, 1, 15)), eq("Provider1")))
-                .thenReturn(Mono.just(1));
-            when(dataRepository.upsertRate(eq("USD"), eq("EUR"), eq(new BigDecimal("1.0860")), eq(LocalDate.of(2024, 1, 16)), eq("Provider1")))
-                .thenReturn(Mono.just(1));
-            when(dataRepository.upsertRate(eq("GBP"), eq("USD"), eq(new BigDecimal("1.2650")), eq(LocalDate.of(2024, 1, 15)), eq("Provider2")))
-                .thenReturn(Mono.just(1));
-            
+            when(dataRepository.save(entities.get(0))).thenReturn(Mono.just(entities.get(0)));
+            when(dataRepository.save(entities.get(1))).thenReturn(Mono.just(entities.get(1)));
+            when(dataRepository.save(entities.get(2))).thenReturn(Mono.just(entities.get(2)));
+
             // ACT
             Flux<HistoricalExchangeRate> result = repository.saveAll(Flux.fromIterable(domainRates));
-            
+
             // ASSERT
             StepVerifier.create(result)
                 .expectNext(domainRates.get(0))
                 .expectNext(domainRates.get(1))
                 .expectNext(domainRates.get(2))
                 .verifyComplete();
-            
+
             verify(dataRepository).saveAll(any(List.class));
-            verify(dataRepository, times(3)).upsertRate(any(), any(), any(), any(), any());
+            verify(dataRepository, times(3)).save(any(HistoricalExchangeRateEntity.class));
             verify(mapper, times(3)).toEntity(any());
             verify(mapper, never()).toDomain(any());
         }
@@ -238,18 +233,16 @@ class DefaultHistoricalRateRepositoryTest {
         void shouldFailWhenIndividualSaveFailsInFallbackMode() {
             // ARRANGE
             when(mapper.toEntity(any())).thenReturn(entities.get(0), entities.get(1));
-            
+
             when(dataRepository.saveAll(any(List.class))).thenReturn(Flux.error(new RuntimeException("Batch failed")));
-            when(dataRepository.upsertRate(eq("USD"), eq("EUR"), eq(new BigDecimal("1.0850")), any(), eq("Provider1")))
-                .thenReturn(Mono.just(1));
-            when(dataRepository.upsertRate(eq("USD"), eq("EUR"), eq(new BigDecimal("1.0860")), any(), eq("Provider1")))
-                .thenReturn(Mono.error(new RuntimeException("Individual save failed")));
-            
+            when(dataRepository.save(entities.get(0))).thenReturn(Mono.just(entities.get(0)));
+            when(dataRepository.save(entities.get(1))).thenReturn(Mono.error(new RuntimeException("Individual save failed")));
+
             List<HistoricalExchangeRate> partialRates = List.of(domainRates.get(0), domainRates.get(1));
-            
+
             // ACT
             Flux<HistoricalExchangeRate> result = repository.saveAll(Flux.fromIterable(partialRates));
-            
+
             // ASSERT
             StepVerifier.create(result)
                 .expectNext(domainRates.get(0))

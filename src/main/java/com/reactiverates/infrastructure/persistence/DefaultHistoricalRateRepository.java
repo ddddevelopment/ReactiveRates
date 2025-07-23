@@ -4,6 +4,8 @@ import com.reactiverates.domain.model.HistoricalExchangeRate;
 import com.reactiverates.domain.service.HistoricalRateRepository;
 import com.reactiverates.infrastructure.persistence.entity.HistoricalExchangeRateEntity;
 import com.reactiverates.infrastructure.persistence.mapper.HistoricalExchangeRateMapper;
+
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,23 +36,7 @@ public class DefaultHistoricalRateRepository implements HistoricalRateRepository
     
     @Override
     public Flux<HistoricalExchangeRate> saveAll(Flux<HistoricalExchangeRate> historicalRates) {
-        return historicalRates
-            .collectList()
-            .flatMapMany(rates -> {
-                if (rates.isEmpty()) {
-                    return Flux.empty();
-                }
-                
-                List<HistoricalExchangeRateEntity> entities = rates.stream()
-                    .map(mapper::toEntity)
-                    .toList();
-                
-                return dataRepository.saveAll(entities)
-                    .map(mapper::toDomain)
-                    .onErrorResume(throwable -> {
-                        return Flux.fromIterable(rates).flatMap(this::save);
-                    });
-            });
+        return dataRepository.saveAll(historicalRates.map(mapper::toEntity)).map(mapper::toDomain);
     }
     
     @Override

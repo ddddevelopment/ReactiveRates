@@ -52,14 +52,12 @@ public class ChainedRateProvider implements RateProvider {
                     .doOnError(err -> log.warn("Provider {} failed to get rate for {}->{}. Reason: {}",
                         provider.getProviderName(), fromCurrency, toCurrency, err.getMessage()))
                 )
-                // Если isAvailable() вернул false или getCurrentRate() вернул ошибку,
-                // onErrorResume переключит на пустой Mono, чтобы concatMap перешел к следующему провайдеру.
                 .onErrorResume(err -> {
                     log.warn("Switching to next provider due to error in {}: {}", provider.getProviderName(), err.getMessage());
                     return Mono.empty();
                 })
             )
-            .next() // Берем первый успешный результат
+            .next()
             .switchIfEmpty(Mono.error(new ExternalApiException("All rate providers are unavailable or failed to provide a rate.")));
     }
 

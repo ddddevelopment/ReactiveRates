@@ -5,13 +5,11 @@ import com.reactiverates.domain.service.HistoricalRateRepository;
 import com.reactiverates.infrastructure.persistence.entity.HistoricalExchangeRateEntity;
 import com.reactiverates.infrastructure.persistence.mapper.HistoricalExchangeRateMapper;
 
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Set;
 
 @Repository

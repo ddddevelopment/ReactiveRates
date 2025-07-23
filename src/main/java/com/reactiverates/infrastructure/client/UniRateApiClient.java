@@ -67,7 +67,7 @@ public class UniRateApiClient implements RateProvider {
                     uriBuilder.queryParam("api_key", config.apiKey());
                     log.debug("[{}] Using API key for request", PROVIDER_NAME);
                 } else {
-                    log.warn("[{}] ⚠️ API key not configured! Request may fail", PROVIDER_NAME);
+                    log.warn("[{}] API key not configured! Request may fail", PROVIDER_NAME);
                 }
                 
                 return uriBuilder.build();

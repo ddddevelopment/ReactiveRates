@@ -17,9 +17,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Random;
 
-/**
- * Mock-провайдер курсов валют для разработки и тестирования
- */
 @Component
 @BaseRateProvider
 @ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "true")

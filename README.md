@@ -137,26 +137,3 @@ java -jar target/reactive-rates-api-*.jar
       ...
     ]
     ```
-
--   **GET `/api/v1/historical/complete?from=USD&to=EUR&startDate=2024-01-01&endDate=2024-01-31`**
-
-    Проверить полноту исторических данных за период.
-
-    **Пример ответа:**
-    ```json
-    {
-      "complete": true
-    }
-    ```
-
--   **GET `/api/v1/historical/range?from=USD&to=EUR`**
-
-    Получить диапазон дат, за которые есть исторические данные.
-
-    **Пример ответа:**
-    ```json
-    {
-      "startDate": "2020-01-01",
-      "endDate": "2024-05-23"
-    }
-    ```

@@ -66,15 +66,21 @@ public class DefaultHistoricalRateService implements HistoricalRateService {
                 .flatMapMany(dates -> provider.getHistoricalRatesForDates(fromCurrency, toCurrency, dates)
                     .doOnNext(rate -> log.debug("Fetched from API: {} -> {} = {} on {}", 
                         fromCurrency, toCurrency, rate.rate(), rate.date()))
-                    .flatMap(rate -> repository.save(rate)
-                        .doOnSuccess(saved -> log.debug("Saved to DB: {} -> {} = {} on {}", 
-                            fromCurrency, toCurrency, saved.rate(), saved.date()))
-                        .onErrorResume(saveError -> {
-                            log.warn("Failed to save rate for {} on {}, but continuing with other data. Error: {}", 
-                                rate.getCacheKey(), rate.date(), saveError.getMessage());
-                            return Mono.just(rate);
-                        })
-                    )
+                    .collectList()
+                    .flatMapMany(rates -> {
+                        if (rates.isEmpty()) {
+                            return Flux.empty();
+                        }
+                        return repository.saveAll(Flux.fromIterable(rates))
+                            .doOnNext(saved -> log.debug("Saved to DB: {} -> {} = {} on {}", 
+                                fromCurrency, toCurrency, saved.rate(), saved.date()))
+                            .onErrorContinue((saveError, obj) -> {
+                                if (obj instanceof HistoricalExchangeRate rate) {
+                                    log.warn("Failed to save rate for {} on {}, but continuing with other data. Error: {}", 
+                                        rate.getCacheKey(), rate.date(), saveError.getMessage());
+                                }
+                            });
+                    })
                     .onErrorResume(error -> {
                         log.warn("Failed to fetch data from provider for {} -> {}, returning only DB data. Error: {}", 
                             fromCurrency, toCurrency, error.getMessage());

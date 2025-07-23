@@ -63,9 +63,20 @@ public class HistoricalRatesController {
         @Parameter(description = "Конечная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-31", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        log.info("[HIST] Получение исторических курсов: {} -> {}, {} - {}", from, to, startDate, endDate);
+        log.info("[HIST] Fetching historical rates: {} -> {}, {} - {}", from, to, startDate, endDate);
         return service.getHistoricalRates(from, to, startDate, endDate)
-            .doOnError(e -> log.error("[HIST] Ошибка получения исторических курсов: {}", e.getMessage()));
+            .doOnError(e -> log.error("[HIST] Error fetching historical rates: {}", e.getMessage()))
+            .doOnComplete(() -> log.info("[HIST] Completed fetching historical rates: {} -> {}, {} - {}", from, to, startDate, endDate))
+            .doOnSubscribe(sub -> log.info("[HIST] Subscribed to historical rates stream: {} -> {}, {} - {}", from, to, startDate, endDate))
+            .collectList()
+            .flatMapMany(list -> {
+                if (list.isEmpty()) {
+                    log.warn("[HIST] No historical rates found for {} -> {}, {} - {}", from, to, startDate, endDate);
+                } else {
+                    log.info("[HIST] Returned {} historical rates for {} -> {}, {} - {}", list.size(), from, to, startDate, endDate);
+                }
+                return Flux.fromIterable(list);
+            });
     }
 
     @GetMapping("/count")
@@ -89,10 +100,10 @@ public class HistoricalRatesController {
         @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to
     ) {
-        log.info("[HIST] Получение количества исторических записей: {} -> {}", from, to);
+        log.info("[HIST] Fetching historical data count: {} -> {}", from, to);
         return service.getHistoricalDataCount(from, to)
             .map(ResponseEntity::ok)
-            .doOnError(e -> log.error("[HIST] Ошибка получения количества: {}", e.getMessage()));
+            .doOnError(e -> log.error("[HIST] Error fetching historical data count: {}", e.getMessage()));
     }
 
     @GetMapping("/complete")
@@ -120,11 +131,11 @@ public class HistoricalRatesController {
         @Parameter(description = "Конечная дата периода (ГГГГ-ММ-ДД)", example = "2024-01-31", required = true)
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        log.info("[HIST] Проверка полноты данных: {} -> {}, {} - {}", from, to, startDate, endDate);
+        log.info("[HIST] Checking data completeness: {} -> {}, {} - {}", from, to, startDate, endDate);
         return service.isDataCompleteForPeriod(from, to, startDate, endDate)
             .map(DataCompleteResponse::new)
             .map(ResponseEntity::ok)
-            .doOnError(e -> log.error("[HIST] Ошибка проверки полноты: {}", e.getMessage()));
+            .doOnError(e -> log.error("[HIST] Error checking data completeness: {}", e.getMessage()));
     }
 
     @GetMapping("/range")
@@ -148,11 +159,11 @@ public class HistoricalRatesController {
         @Parameter(description = "Целевая валюта (3 буквы, ISO)", example = "EUR", required = true)
         @RequestParam String to
     ) {
-        log.info("[HIST] Получение диапазона дат: {} -> {}", from, to);
+        log.info("[HIST] Fetching date range: {} -> {}", from, to);
         return service.getDataDateRange(from, to)
             .map(dates -> new DateRangeResponse(dates.length == 2 ? dates[0] : null, dates.length == 2 ? dates[1] : null))
             .map(ResponseEntity::ok)
-            .doOnError(e -> log.error("[HIST] Ошибка получения диапазона дат: {}", e.getMessage()));
+            .doOnError(e -> log.error("[HIST] Error fetching date range: {}", e.getMessage()));
     }
 
     @Schema(description = "Ответ о полноте исторических данных за период.")

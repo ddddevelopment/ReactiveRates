@@ -39,7 +39,7 @@ public class MockHistoricalRateProvider implements HistoricalRateProvider {
 
     @Override
     public Flux<HistoricalExchangeRate> getHistoricalRates(String fromCurrency, String toCurrency, LocalDate startDate, LocalDate endDate) {
-        log.debug("[{}] Генерация mock исторических курсов: {} -> {}, {} - {}", PROVIDER_NAME, fromCurrency, toCurrency, startDate, endDate);
+        log.debug("[{}] Generating mock historical rates: {} -> {}, {} - {}", PROVIDER_NAME, fromCurrency, toCurrency, startDate, endDate);
         List<LocalDate> dates = startDate.datesUntil(endDate.plusDays(1))
             .filter(date -> date.getDayOfWeek().getValue() <= 5)
             .toList();
@@ -48,7 +48,7 @@ public class MockHistoricalRateProvider implements HistoricalRateProvider {
 
     @Override
     public Flux<HistoricalExchangeRate> getHistoricalRatesForDates(String fromCurrency, String toCurrency, Set<LocalDate> dates) {
-        log.debug("[{}] Генерация mock исторических курсов для дат: {} -> {}, {} дат", PROVIDER_NAME, fromCurrency, toCurrency, dates.size());
+        log.debug("[{}] Generating mock historical rates for dates: {} -> {}, {} dates", PROVIDER_NAME, fromCurrency, toCurrency, dates.size());
         return Flux.fromIterable(dates)
             .delayElements(Duration.ofMillis(30))
             .map(date -> generateMockRate(fromCurrency, toCurrency, date));
@@ -56,7 +56,7 @@ public class MockHistoricalRateProvider implements HistoricalRateProvider {
 
     @Override
     public Mono<HistoricalExchangeRate> getHistoricalRate(String fromCurrency, String toCurrency, LocalDate date) {
-        log.debug("[{}] Генерация mock исторического курса: {} -> {} на {}", PROVIDER_NAME, fromCurrency, toCurrency, date);
+        log.debug("[{}] Generating mock historical rate: {} -> {} on {}", PROVIDER_NAME, fromCurrency, toCurrency, date);
         return Mono.delay(Duration.ofMillis(50))
             .map(ignored -> generateMockRate(fromCurrency, toCurrency, date));
     }
@@ -92,7 +92,7 @@ public class MockHistoricalRateProvider implements HistoricalRateProvider {
             .setScale(6, RoundingMode.HALF_UP);
         Currency from = Currency.of(fromCurrency);
         Currency to = Currency.of(toCurrency);
-        log.debug("[{}] Mock исторический курс: {} -> {} = {} на {}", PROVIDER_NAME, fromCurrency, toCurrency, rate, date);
+        log.debug("[{}] Mock historical rate: {} -> {} = {} on {}", PROVIDER_NAME, fromCurrency, toCurrency, rate, date);
         return HistoricalExchangeRate.of(from, to, rate, date, PROVIDER_NAME);
     }
 } 

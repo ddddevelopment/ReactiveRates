@@ -41,7 +41,7 @@ public class UniRateHistoricalApiClient implements HistoricalRateProvider {
 
     @Override
     public Flux<HistoricalExchangeRate> getHistoricalRates(String fromCurrency, String toCurrency, LocalDate startDate, LocalDate endDate) {
-        log.debug("[{}] Получение таймсерии: {} -> {}, {} - {}", PROVIDER_NAME, fromCurrency, toCurrency, startDate, endDate);
+        log.debug("[{}] Fetching time series: {} -> {}, {} - {}", PROVIDER_NAME, fromCurrency, toCurrency, startDate, endDate);
         if (startDate.isAfter(endDate)) {
             return Flux.error(new IllegalArgumentException("Start date cannot be after end date"));
         }
@@ -79,19 +79,19 @@ public class UniRateHistoricalApiClient implements HistoricalRateProvider {
                 })
                 .timeout(config.timeout())
                 .retryWhen(Retry.backoff(2, config.connectTimeout()))
-                .doOnError(e -> log.error("[{}] Ошибка получения таймсерии: {}", PROVIDER_NAME, e.getMessage()));
+                .doOnError(e -> log.error("[{}] Error fetching time series: {}", PROVIDER_NAME, e.getMessage()));
     }
 
     @Override
     public Flux<HistoricalExchangeRate> getHistoricalRatesForDates(String fromCurrency, String toCurrency, Set<LocalDate> dates) {
         return Flux.fromIterable(dates)
                 .flatMap(date -> getHistoricalRate(fromCurrency, toCurrency, date))
-                .onErrorContinue((e, o) -> log.warn("[{}] Ошибка при получении курса на дату {}: {}", PROVIDER_NAME, o, e.getMessage()));
+                .onErrorContinue((e, o) -> log.warn("[{}] Error fetching rate for date {}: {}", PROVIDER_NAME, o, e.getMessage()));
     }
 
     @Override
     public Mono<HistoricalExchangeRate> getHistoricalRate(String fromCurrency, String toCurrency, LocalDate date) {
-        log.debug("[{}] Получение исторического курса: {} -> {} на {}", PROVIDER_NAME, fromCurrency, toCurrency, date);
+        log.debug("[{}] Fetching historical rate: {} -> {} on {}", PROVIDER_NAME, fromCurrency, toCurrency, date);
         return webClient.get()
                 .uri(builder -> {
                     var uriBuilder = builder.path("/api/historical/rates")
@@ -120,7 +120,7 @@ public class UniRateHistoricalApiClient implements HistoricalRateProvider {
                 })
                 .timeout(config.timeout())
                 .retryWhen(Retry.backoff(2, config.connectTimeout()))
-                .doOnError(e -> log.error("[{}] Ошибка получения курса на дату {}: {}", PROVIDER_NAME, date, e.getMessage()));
+                .doOnError(e -> log.error("[{}] Error fetching rate for date {}: {}", PROVIDER_NAME, date, e.getMessage()));
     }
 
     @Override

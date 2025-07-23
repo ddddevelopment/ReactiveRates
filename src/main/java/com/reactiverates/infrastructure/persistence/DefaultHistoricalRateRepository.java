@@ -27,14 +27,9 @@ public class DefaultHistoricalRateRepository implements HistoricalRateRepository
     
     @Override
     public Mono<HistoricalExchangeRate> save(HistoricalExchangeRate historicalRate) {
-        return dataRepository.upsertRate(
-                historicalRate.fromCurrency().code(),
-                historicalRate.toCurrency().code(),
-                historicalRate.rate(),
-                historicalRate.date(),
-                historicalRate.providerName()
-            )
-            .thenReturn(historicalRate);
+        HistoricalExchangeRateEntity entity = mapper.toEntity(historicalRate);
+        return dataRepository.save(entity)
+            .map(mapper::toDomain);
     }
     
     @Override

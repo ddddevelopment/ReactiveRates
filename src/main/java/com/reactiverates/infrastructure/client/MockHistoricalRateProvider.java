@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @BaseHistoricalRateProvider
-@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "false")
+@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "true")
 public class MockHistoricalRateProvider implements HistoricalRateProvider {
     private static final Logger log = LoggerFactory.getLogger(MockHistoricalRateProvider.class);
     private static final String PROVIDER_NAME = "Mock Historical Provider";

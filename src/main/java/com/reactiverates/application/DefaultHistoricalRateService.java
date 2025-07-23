@@ -98,45 +98,6 @@ public class DefaultHistoricalRateService implements HistoricalRateService {
         });
     }
     
-    @Override
-    public Mono<Boolean> isDataCompleteForPeriod(
-            String fromCurrency, 
-            String toCurrency, 
-            LocalDate startDate, 
-            LocalDate endDate) {
-        
-        log.debug("Checking data completeness for {} -> {} from {} to {}", 
-            fromCurrency, toCurrency, startDate, endDate);
-        
-        return findMissingDates(fromCurrency, toCurrency, startDate, endDate)
-            .map(Set::isEmpty)
-            .doOnNext(complete -> log.debug("Data complete for {} -> {} from {} to {}: {}", 
-                fromCurrency, toCurrency, startDate, endDate, complete));
-    }
-    
-    @Override
-    public Mono<Long> getHistoricalDataCount(String fromCurrency, String toCurrency) {
-        log.debug("Counting historical data for {} -> {}", fromCurrency, toCurrency);
-        
-        return repository.countByPair(fromCurrency, toCurrency)
-            .doOnNext(count -> log.debug("Found {} historical records for {} -> {}", 
-                count, fromCurrency, toCurrency));
-    }
-    
-    @Override
-    public Mono<LocalDate[]> getDataDateRange(String fromCurrency, String toCurrency) {
-        log.debug("Getting date range for {} -> {}", fromCurrency, toCurrency);
-        
-        Mono<LocalDate> earliest = repository.findEarliestDate(fromCurrency, toCurrency);
-        Mono<LocalDate> latest = repository.findLatestDate(fromCurrency, toCurrency);
-        
-        return Mono.zip(earliest, latest)
-            .map(tuple -> new LocalDate[]{tuple.getT1(), tuple.getT2()})
-            .doOnNext(range -> log.debug("Date range for {} -> {}: {} to {}", 
-                fromCurrency, toCurrency, range[0], range[1]))
-            .switchIfEmpty(Mono.just(new LocalDate[0]));
-    }
-    
     private Mono<Set<LocalDate>> findMissingDates(
             String fromCurrency, 
             String toCurrency, 

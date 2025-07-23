@@ -49,7 +49,7 @@ unirate-api:
     connect-timeout: 5s
 
 mock-provider:
-  enabled: false
+  enabled: true
 
 cache:
     enabled: true

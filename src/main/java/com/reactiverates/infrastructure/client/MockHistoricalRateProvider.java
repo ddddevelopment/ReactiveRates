@@ -7,7 +7,6 @@ import com.reactiverates.infrastructure.config.BaseHistoricalRateProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,7 +20,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 @BaseHistoricalRateProvider
-@ConditionalOnProperty(name = "mock-provider.enabled", havingValue = "true")
 public class MockHistoricalRateProvider implements HistoricalRateProvider {
     private static final Logger log = LoggerFactory.getLogger(MockHistoricalRateProvider.class);
     private static final String PROVIDER_NAME = "Mock Historical Provider";

@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <changeSet id="1-init-historical-exchange-rates" author="copilot">
+    <changeSet id="1-init-historical-exchange-rates" author="ddddevelopment">
         <createTable tableName="historical_exchange_rates">
             <column name="id" type="BIGSERIAL">
                 <constraints primaryKey="true" nullable="false"/>
@@ -30,16 +30,47 @@
         </createTable>
 
         <addUniqueConstraint tableName="historical_exchange_rates" columnNames="from_currency, to_currency, date" constraintName="uk_currency_pair_date"/>
-        <createIndex tableName="historical_exchange_rates" indexName="idx_currency_pair">
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_currency_pair_date_range">
             <column name="from_currency"/>
             <column name="to_currency"/>
-        </createIndex>
-        <createIndex tableName="historical_exchange_rates" indexName="idx_date_range">
             <column name="date"/>
         </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_currency_pair_date_agg">
+            <column name="from_currency"/>
+            <column name="to_currency"/>
+            <column name="date"/>
+        </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_date_cleanup">
+            <column name="date"/>
+        </createIndex>
+        
         <createIndex tableName="historical_exchange_rates" indexName="idx_provider">
             <column name="provider_name"/>
         </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_active_currency_pairs">
+            <column name="from_currency"/>
+            <column name="to_currency"/>
+        </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_from_currency">
+            <column name="from_currency"/>
+        </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_to_currency">
+            <column name="to_currency"/>
+        </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_provider_date">
+            <column name="provider_name"/>
+            <column name="date"/>
+        </createIndex>
+        
+        <createIndex tableName="historical_exchange_rates" indexName="idx_created_at">
+            <column name="created_at"/>
+        </createIndex>
     </changeSet>
-
 </databaseChangeLog>

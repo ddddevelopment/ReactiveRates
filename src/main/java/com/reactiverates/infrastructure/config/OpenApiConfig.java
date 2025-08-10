@@ -5,6 +5,9 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +24,9 @@ public class OpenApiConfig {
     public OpenAPI reactiveRatesOpenAPI() {
         return new OpenAPI()
                 .info(createApiInfo())
-                .servers(createServers());
+                .servers(createServers())
+                .components(createComponents())
+                .addSecurityItem(createSecurityRequirement());
     }
 
     private Info createApiInfo() {
@@ -36,6 +41,9 @@ public class OpenApiConfig {
                     "• Проверка поддержки валютных пар\n" +
                     "• Высокая производительность (WebFlux)\n" +
                     "• Кэширование для ускорения ответов\n" +
+                    "\n" +
+                    "🔐 **Аутентификация:** Для доступа к API используйте Bearer токен в заголовке Authorization.\n" +
+                    "Пример: `Authorization: Bearer your-jwt-token-here`\n" +
                     "\nДокументация: /swagger-ui.html"
                 )
                 .version("1.0.0")
@@ -64,5 +72,23 @@ public class OpenApiConfig {
                         .url("https://api.reactiverates.com")
                         .description("Production Server")
         );
+    }
+
+    private Components createComponents() {
+        return new Components()
+                .addSecuritySchemes("bearerAuth", createBearerSecurityScheme());
+    }
+
+    private SecurityScheme createBearerSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT")
+                .description("Введите ваш JWT токен в формате: Bearer <token>");
+    }
+
+    private SecurityRequirement createSecurityRequirement() {
+        return new SecurityRequirement()
+                .addList("bearerAuth");
     }
 } 

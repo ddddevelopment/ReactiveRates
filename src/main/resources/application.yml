@@ -46,14 +46,14 @@ management:
 
 exchangerate-api:
   base-url: https://v6.exchangerate-api.com
-  api-key: {$EXCHANGE_RATE_API_KEY}
+  api-key: feedc09fac544d8041317c40
   priority: 10
   timeout: 10s
   connect-timeout: 5s
 
 unirate-api:
     base-url: https://api.unirateapi.com
-    api-key: {$UNIRATE_API_KEY}
+    api-key: QashoCNTEdDqrEYt2WMMvUSMo3tyJz8BHpCXkqvSSgBUbqB5ruk7lu4HvwXbp3GV
     priority: 20
     timeout: 10s
     connect-timeout: 5s
@@ -85,7 +85,6 @@ springdoc:
 
 jwt:
   secret: ${JWT_SECRET:mySecretKeymySecretKeymySecretKeymySecretKey}
-
 
 
 security:

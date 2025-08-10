@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
     name = "📊 Исторические курсы валют",
     description = "Операции для получения и анализа исторических курсов валют."
 )
+@SecurityRequirement(name = "bearerAuth")
 public class HistoricalRatesController {
     private static final Logger log = LoggerFactory.getLogger(HistoricalRatesController.class);
     private final HistoricalRateService service;
@@ -49,6 +51,10 @@ public class HistoricalRatesController {
         @ApiResponse(
             responseCode = "400",
             description = "❌ Некорректные параметры запроса"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "🔐 Не авторизован - требуется Bearer токен"
         )
     })
     public Flux<HistoricalExchangeRate> getHistoricalRates(

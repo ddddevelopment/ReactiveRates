@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -34,6 +35,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
     name = "💱 Конвертация валют",
     description = "Операции для мгновенной конвертации и получения курсов валют."
 )
+@SecurityRequirement(name = "bearerAuth")
 public class CurrencyConversionController {
     private static final Logger log = LoggerFactory.getLogger(CurrencyConversionController.class);
     
@@ -64,6 +66,10 @@ public class CurrencyConversionController {
         @ApiResponse(
             responseCode = "404",
             description = "🔍 Валютная пара не найдена"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "🔐 Не авторизован - требуется Bearer токен"
         )
     })
     public Mono<ResponseEntity<ConversionResult>> convertCurrency(
@@ -98,6 +104,10 @@ public class CurrencyConversionController {
         @ApiResponse(
             responseCode = "404",
             description = "🔍 Валютная пара не найдена"
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "🔐 Не авторизован - требуется Bearer токен"
         )
     })
     public Mono<ResponseEntity<ExchangeRate>> getExchangeRate(
@@ -130,6 +140,10 @@ public class CurrencyConversionController {
                 mediaType = "application/json",
                 schema = @Schema(implementation = SupportResponse.class)
             )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "🔐 Не авторизован - требуется Bearer токен"
         )
     })
     public Mono<ResponseEntity<SupportResponse>> checkCurrencySupport(

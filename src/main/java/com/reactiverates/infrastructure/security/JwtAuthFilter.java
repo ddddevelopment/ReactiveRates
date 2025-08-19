@@ -88,11 +88,11 @@ public class JwtAuthFilter implements WebFilter {
                 if (jwtService.validateToken(token)) {
                     String username = jwtService.extractUsername(token);
                     
-                    List<Map<String, String>> authoritiesList = jwtService.extractClaim(token, 
-                        claims -> (List<Map<String, String>>) claims.get("authorities"));
+                    List<String> roles = jwtService.extractClaim(token, 
+                        claims -> claims.get("roles", List.class));
                     
-                    Collection<SimpleGrantedAuthority> authorities = authoritiesList.stream()
-                        .map(auth -> new SimpleGrantedAuthority(auth.get("authority")))
+                    Collection<SimpleGrantedAuthority> authorities = roles.stream()
+                        .map(role -> new SimpleGrantedAuthority(role))
                         .toList();
                     
                     UsernamePasswordAuthenticationToken authToken = 

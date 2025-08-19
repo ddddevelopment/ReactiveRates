@@ -84,7 +84,7 @@ springdoc:
     default-produces-media-type: application/json
 
 jwt:
-  secret: ${JWT_SECRET:mySecretKeymySecretKeymySecretKeymySecretKey}
+  secret: mySecretKeymySecretKeymySecretKeymySecretKey
 
 
 security:

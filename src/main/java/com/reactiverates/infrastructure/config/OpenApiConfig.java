@@ -17,8 +17,17 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${server.port:8080}")
-    private String serverPort;
+    @Value("${openapi.server.dev.url}")
+    private String devUrl;
+
+    @Value("${openapi.server.dev.description}")
+    private String devDescription;
+
+    @Value("${openapi.server.prod.url}")
+    private String prodUrl;
+
+    @Value("${openapi.server.prod.description}")
+    private String prodDescription;
 
     @Bean
     public OpenAPI reactiveRatesOpenAPI() {
@@ -66,11 +75,11 @@ public class OpenApiConfig {
     private List<Server> createServers() {
         return List.of(
                 new Server()
-                        .url("http://localhost:" + serverPort)
-                        .description("Local Development Server"),
+                        .url(devUrl)
+                        .description(devDescription),
                 new Server()
-                        .url("https://api.reactiverates.com")
-                        .description("Production Server")
+                        .url(prodUrl)
+                        .description(prodDescription)
         );
     }
 

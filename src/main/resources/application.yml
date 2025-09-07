@@ -1,16 +1,27 @@
 server:
-    port: 8080
+    port: 8083
 
 spring:
     application:
-        name: ReactiveRates API
+        name: rates-service
+    config:
+        import: "optional:configserver:http://config-user:config-password@localhost:8888"
+    cloud:
+        config:
+            uri: http://localhost:8888
+            username: config-user
+            password: config-password
+            fail-fast: false
+            retry:
+                initial-interval: 2000
+                max-attempts: 5
     jackson:
         default-property-inclusion: non-null
         serialization:
             write-dates-as-timestamps: false
     
     r2dbc:
-        url: r2dbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
+        url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
         username: ${DB_USER:postgres}
         password: ${DB_PASSWORD:postgres}
         pool:
@@ -20,7 +31,7 @@ spring:
             max-idle-time: PT30M
 
     datasource:
-        jdbcUrl: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
+        jdbcUrl: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
         username: ${DB_USER:postgres}
         password: ${DB_PASSWORD:postgres}
         driver-class-name: org.postgresql.Driver
@@ -28,9 +39,9 @@ spring:
         init:
             mode: never
     liquibase:
-        enabled: true
+        enabled: false
         change-log: classpath:db/changelog/db.changelog-master.xml
-        url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
+        url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
         user: ${DB_USER:postgres}
         password: ${DB_PASSWORD:postgres}
 
@@ -83,9 +94,17 @@ springdoc:
     default-consumes-media-type: application/json
     default-produces-media-type: application/json
 
+eureka:
+    client:
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5
+        lease-expiration-duration-in-seconds: 10
+
 jwt:
   secret: mySecretKeymySecretKeymySecretKeymySecretKey
-
 
 security:
   cors:
@@ -98,3 +117,13 @@ logging:
     level:
         com.reactiverates: ${LOG_LEVEL:DEBUG}
         org.springframework.web: ${LOG_LEVEL:INFO}
+
+# OpenAPI custom configuration
+openapi:
+  server:
+    dev:
+      url: http://localhost:${server.port}
+      description: Локальная среда разработки
+    prod:
+      url: https://api.reactiverates.com
+      description: Продакшн сервер

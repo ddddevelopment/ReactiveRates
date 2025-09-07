@@ -16,7 +16,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -70,10 +69,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        
+        // Когда allowCredentials = true, нельзя использовать "*" в allowedOrigins
+        if (allowCredentials) {
+            // Используем конкретные origins из конфигурации
+            configuration.setAllowedOriginPatterns(List.of(allowedOrigins));
+        } else {
+            configuration.setAllowedOrigins(List.of("*"));
+        }
+        
+        configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
+        configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
+        configuration.setAllowCredentials(allowCredentials);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

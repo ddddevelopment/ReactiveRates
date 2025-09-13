@@ -15,6 +15,18 @@
 	<description>Reactive Currency Exchange API</description>
 	<packaging>jar</packaging>
 	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+
 		<!-- Spring Cloud Dependencies -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

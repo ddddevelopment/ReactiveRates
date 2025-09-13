@@ -19,6 +19,12 @@ spring:
         default-property-inclusion: non-null
         serialization:
             write-dates-as-timestamps: false
+    data:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            password: ${REDIS_PASSWORD:}
+            database: ${REDIS_DATABASE:0}
     
     r2dbc:
         url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:reactive_rates_db}
@@ -127,3 +133,11 @@ openapi:
     prod:
       url: https://api.reactiverates.com
       description: Продакшн сервер
+
+reactive-rates:
+  cache:
+    ttl: ${CACHE_TTL:PT5M}
+    max-size: ${CACHE_MAX_SIZE:1000}
+    enabled: ${CACHE_ENABLED:true}
+    use-redis: ${CACHE_USE_REDIS:true}
+    key-prefix: ${CACHE_KEY_PREFIX:rates:}
